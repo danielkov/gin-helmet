@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -241,8 +242,21 @@ func TestContentSecurityPolicy(t *testing.T) {
 
 	r.ServeHTTP(w, req)
 
-	if w.HeaderMap.Get("Content-Security-Policy") != "default-src 'self'; img-src *; media-src media1.com media2.com; script-src userscripts.example.com" {
-		t.Errorf("Failed to set Content-Security-Policy to provided directives.")
+	fmt.Println(w.HeaderMap.Get("Content-Security-Policy"))
+
+	v := []string{
+		"default-src 'self'",
+		"img-src *",
+		"media-src media1.com media2.com",
+		"script-src userscripts.example.com",
+	}
+
+	h := w.HeaderMap.Get("Content-Security-Policy")
+
+	for _, b := range v {
+		if !strings.Contains(h, b) {
+			t.Errorf("Directive was not set on Content-Security-Policy header: %s", b)
+		}
 	}
 }
 
@@ -265,14 +279,27 @@ func TestContentSecurityPolicyLegacy(t *testing.T) {
 
 	r.ServeHTTP(w, req)
 
-	if w.HeaderMap.Get("Content-Security-Policy") != "default-src 'self'; img-src *; media-src media1.com media2.com; script-src userscripts.example.com" {
-		t.Errorf("Failed to set Content-Security-Policy to provided directives.")
+	a := w.HeaderMap.Get("Content-Security-Policy")
+	b := w.HeaderMap.Get("X-Webkit-CSP")
+	c := w.HeaderMap.Get("X-Content-Security-Policy")
+
+	v := []string{
+		"default-src 'self'",
+		"img-src *",
+		"media-src media1.com media2.com",
+		"script-src userscripts.example.com",
 	}
-	if w.HeaderMap.Get("X-Webkit-CSP") != "default-src 'self'; img-src *; media-src media1.com media2.com; script-src userscripts.example.com" {
-		t.Errorf("Failed to set X-Webkit-CSP to provided directives.")
-	}
-	if w.HeaderMap.Get("X-Content-Security-Policy") != "default-src 'self'; img-src *; media-src media1.com media2.com; script-src userscripts.example.com" {
-		t.Errorf("Failed to set X-Content-Security-Policy to provided directives.")
+
+	for _, d := range v {
+		if !strings.Contains(a, d) {
+			t.Errorf("Directive was not set on Content-Security-Policy header: %s", d)
+		}
+		if !strings.Contains(b, d) {
+			t.Errorf("Directive was not set on X-Webkit-CSP header: %s", d)
+		}
+		if !strings.Contains(c, d) {
+			t.Errorf("Directive was not set on X-Content-Security-Policy header: %s", d)
+		}
 	}
 }
 
@@ -305,7 +332,7 @@ func TestSetHPKP(t *testing.T) {
 	})
 
 	r.ServeHTTP(w, req)
-	fmt.Println(w.HeaderMap.Get("Public-Key-Pins"))
+
 	if w.HeaderMap.Get("Public-Key-Pins") != "pin-sha256=\"cUPcTAZWKaASuYWhhneDttWpY3oBAkE3h2+soZS7sWs=\"; pin-sha256=\"M8HztCzM3elUxkcjR2S5P4hhyBNf6lHkmjAHKhpGPWE=\"; max-age=5184000; includeSubDomains; report-uri=\"domain.com\"" {
 		t.Errorf("Failed to set Public-Key-Pins according to parameters.")
 	}
