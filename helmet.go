@@ -3,6 +3,7 @@ package helmet
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -115,8 +116,9 @@ See [Content Security Policy on MDN](https://developer.mozilla.org/en-US/docs/We
 func ContentSecurityPolicy(opt map[string]string, legacy bool) gin.HandlerFunc {
 	policy := ""
 	for k, v := range opt {
-		policy += fmt.Sprintf("%s %s;", k, v)
+		policy += fmt.Sprintf("%s %s; ", k, v)
 	}
+	policy = strings.TrimSuffix(policy, "; ")
 	return func(c *gin.Context) {
 		if legacy {
 			c.Writer.Header().Set("X-Webkit-CSP", policy)
@@ -130,13 +132,13 @@ func ContentSecurityPolicy(opt map[string]string, legacy bool) gin.HandlerFunc {
 // upcoming Chrome requirements policy. The function accepts a maxAge int which is the TTL for the policy in delta seconds,
 // an enforce boolean, which simply adds an enforce directive to the policy (otherwise it's report-only mode) and a
 // optional reportUri, which is the URI to which report information is sent when the policy is violated.
-func ExpectCT(maxAge int, enforce bool, reportUri ...string) gin.HandlerFunc {
+func ExpectCT(maxAge int, enforce bool, reportURI ...string) gin.HandlerFunc {
 	policy := ""
 	if enforce {
-		policy += "enforce,"
+		policy += "enforce, "
 	}
-	if len(reportUri) > 0 {
-		policy += fmt.Sprintf("report-uri=%s,", reportUri[0])
+	if len(reportURI) > 0 {
+		policy += fmt.Sprintf("report-uri=%s, ", reportURI[0])
 	}
 	policy += fmt.Sprintf("max-age=%d", maxAge)
 	return func(c *gin.Context) {
@@ -160,11 +162,19 @@ opts := map[string]string{
 s.Use(helmet.SetHPKP(opts))
 ```
 */
-func SetHPKP(opt map[string]string) gin.HandlerFunc {
+func SetHPKP(keys []string, maxAge int, sub bool, reportURI ...string) gin.HandlerFunc {
 	policy := ""
-	for k, v := range opt {
-		policy += fmt.Sprintf("%s %s;", k, v)
+	for _, v := range keys {
+		policy += fmt.Sprintf("pin-sha256=\"%s\"; ", v)
 	}
+	policy += fmt.Sprintf("max-age=%d; ", maxAge)
+	if sub {
+		policy += "includeSubDomains; "
+	}
+	if len(reportURI) > 0 {
+		policy += fmt.Sprintf("report-uri=\"%s\"", reportURI[0])
+	}
+	policy = strings.TrimSuffix(policy, "; ")
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Public-Key-Pins", policy)
 	}
