@@ -100,16 +100,15 @@ func NoCache() gin.HandlerFunc {
 // The function accepts a map of its parameters which are appended to the header so you can control which headers should be set
 // The second parameter of the function is a boolean, which set to true will tell the handler to also set legacy headers, like
 // those that work in older versions of Chrome and Firefox.
-/* Example usage:
-```golang
-opts := map[string]string{
-	"default-src": "'self'",
-	"img-src": "*",
-	"media-src": "media1.com media2.com",
-	"script-src": "userscripts.example.com"
-}
-s.Use(helmet.ContentSecurityPolicy(opts, true))
-```
+/*
+Example usage:
+    opts := map[string]string{
+	    "default-src": "'self'",
+	    "img-src": "*",
+	    "media-src": "media1.com media2.com",
+	    "script-src": "userscripts.example.com"
+    }
+	s.Use(helmet.ContentSecurityPolicy(opts, true))
 
 See [Content Security Policy on MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) for more info.
 */
@@ -153,14 +152,10 @@ func ExpectCT(maxAge int, enforce bool, reportURI ...string) gin.HandlerFunc {
 /*
 Example usage:
 
-```golang
-opts := map[string]string{
-	"pin-sha256": "cUPcTAZWKaASuYWhhneDttWpY3oBAkE3h2+soZS7sWs=",
-	"pin-sha256": "M8HztCzM3elUxkcjR2S5P4hhyBNf6lHkmjAHKhpGPWE=",
-	"max-age": "5184000",
-}
-s.Use(helmet.SetHPKP(opts))
-```
+	keys := []string{"cUPcTAZWKaASuYWhhneDttWpY3oBAkE3h2+soZS7sWs=", "M8HztCzM3elUxkcjR2S5P4hhyBNf6lHkmjAHKhpGPWE="}
+	r := gin.New()
+	r.Use(SetHPKP(keys, 5184000, true, "domain.com"))
+
 */
 func SetHPKP(keys []string, maxAge int, sub bool, reportURI ...string) gin.HandlerFunc {
 	policy := ""
