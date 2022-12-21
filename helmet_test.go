@@ -32,6 +32,13 @@ func TestNoSniff(t *testing.T) {
 	}
 }
 
+func TestNoRobotIndex(t *testing.T) {
+	w := getTestCaseFor(NoRobotIndex)
+	if w.HeaderMap.Get("X-Robots-Tag") != "noindex" {
+		t.Errorf("Failed to set X-Robots-Tag header to noindex.")
+	}
+}
+
 func TestDNSPrefetchControl(t *testing.T) {
 	w := getTestCaseFor(DNSPrefetchControl)
 	if w.HeaderMap.Get("X-DNS-Prefetch-Control") != "off" {
