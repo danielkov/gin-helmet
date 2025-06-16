@@ -8,6 +8,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// NoRobotIndex applies header to protect your server from robot indexation
+func NoRobotIndex() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("X-Robots-Tag", "noindex")
+	}
+}
+
 // NoSniff applies header to protect your server from MimeType Sniffing
 func NoSniff() gin.HandlerFunc {
 	return func(c *gin.Context) {
