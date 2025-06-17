@@ -1,28 +1,164 @@
-# Gin Helmet
+# gin-helmet
 
-Security middlewares for Gin (`gin-gonic/gin`) inspired by the popular `helmet` middleware package for Node JS `express` and `koa`.
-___
-[![Build Status](https://travis-ci.org/danielkov/gin-helmet.svg?branch=master)](https://travis-ci.org/danielkov/gin-helmet)
-[![Coverage Status](https://coveralls.io/repos/github/danielkov/gin-helmet/badge.svg?branch=master)](https://coveralls.io/github/danielkov/gin-helmet?branch=master)
-[![Go Report Card](https://goreportcard.com/badge/github.com/danielkov/gin-helmet)](https://goreportcard.com/report/github.com/danielkov/gin-helmet)
-[![godocs](https://img.shields.io/badge/godocs-reference-blue.svg)](https://godoc.org/github.com/danielkov/gin-helmet)
-[![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
+A modular security middleware collection for Go web frameworks, inspired by [helmet.js](https://helmetjs.github.io/).
 
-## Usage
+## Overview
 
-Add the `Default` middleware for basic security measures.
+This package provides HTTP security middleware for multiple Go web frameworks through a core abstraction layer. Each framework has its own implementation package that wraps the core functionality.
+
+## Architecture
+
+- **`core/`** - Framework-agnostic security middleware logic
+- **`ginhelmet/`** - Gin framework implementation
+- **`echohelmet/`** - Echo framework implementation
+- **`beegohelmet/`** - Beego framework implementation
+- **`zerohelmet/`** - Go-Zero framework implementation
+- **`fiberhelmet/`** - Fiber framework implementation
+
+## Supported Frameworks
+
+| Framework                                       | Package       | Usage                                                |
+| ----------------------------------------------- | ------------- | ---------------------------------------------------- |
+| [Gin](https://github.com/gin-gonic/gin)         | `ginhelmet`   | `go get github.com/danielkov/gin-helmet/ginhelmet`   |
+| [Echo](https://github.com/labstack/echo)        | `echohelmet`  | `go get github.com/danielkov/gin-helmet/echohelmet`  |
+| [Beego](https://github.com/beego/beego)         | `beegohelmet` | `go get github.com/danielkov/gin-helmet/beegohelmet` |
+| [Go-Zero](https://github.com/zeromicro/go-zero) | `zerohelmet`  | `go get github.com/danielkov/gin-helmet/zerohelmet`  |
+| [Fiber](https://github.com/gofiber/fiber)       | `fiberhelmet` | `go get github.com/danielkov/gin-helmet/fiberhelmet` |
+
+## Quick Start
+
+### Gin Example
 
 ```go
-s := gin.New()
-s.Use(helmet.Default())
+package main
+
+import (
+    "github.com/gin-gonic/gin"
+    "github.com/danielkov/gin-helmet/ginhelmet"
+)
+
+func main() {
+    r := gin.Default()
+
+    // Use default security headers
+    r.Use(ginhelmet.Default())
+
+    // Or use individual middleware
+    r.Use(ginhelmet.NoSniff())
+    r.Use(ginhelmet.FrameGuard())
+
+    r.GET("/", func(c *gin.Context) {
+        c.JSON(200, gin.H{"message": "Hello, World!"})
+    })
+
+    r.Run()
+}
 ```
 
-You can also add each middleware separately:
+### Echo Example
 
 ```go
-s.Use(helmet.NoCache())
+package main
+
+import (
+    "github.com/labstack/echo/v4"
+    "github.com/danielkov/gin-helmet/echohelmet"
+)
+
+func main() {
+    e := echo.New()
+
+    // Use default security headers
+    for _, middleware := range echohelmet.Default() {
+        e.Use(middleware)
+    }
+
+    e.GET("/", func(c echo.Context) error {
+        return c.JSON(200, map[string]string{"message": "Hello, World!"})
+    })
+
+    e.Start(":8080")
+}
 ```
 
-Those not included in the `Default()` middleware are considered more advanced and require consideration before using.
+### Fiber Example
 
-See the [godoc](https://godoc.org/github.com/danielkov/gin-helmet) for more info and examples.
+```go
+package main
+
+import (
+    "github.com/gofiber/fiber/v2"
+    "github.com/danielkov/gin-helmet/fiberhelmet"
+)
+
+func main() {
+    app := fiber.New()
+
+    // Use default security headers
+    for _, middleware := range fiberhelmet.Default() {
+        app.Use(middleware)
+    }
+
+    app.Get("/", func(c *fiber.Ctx) error {
+        return c.JSON(fiber.Map{"message": "Hello, World!"})
+    })
+
+    app.Listen(":8080")
+}
+```
+
+## Available Middleware
+
+All implementations provide the same security middleware functions:
+
+- **`NoSniff()`** - Prevents MIME type sniffing
+- **`DNSPrefetchControl()`** - Controls DNS prefetching
+- **`FrameGuard()`** - Prevents clickjacking
+- **`SetHSTS()`** - Enforces HTTPS connections
+- **`IENoOpen()`** - Prevents IE from executing downloads
+- **`XSSFilter()`** - Basic XSS protection (deprecated, use CSP instead)
+- **`Referrer()`** - Controls referrer information
+- **`NoCache()`** - Disables caching
+- **`ContentSecurityPolicy()`** - Sets Content Security Policy
+- **`ExpectCT()`** - Certificate Transparency (deprecated)
+- **`SetHPKP()`** - HTTP Public Key Pinning (deprecated)
+- **`CrossOriginOpenerPolicy()`** - COOP header
+- **`CrossOriginEmbedderPolicy()`** - COEP header
+- **`CrossOriginResourcePolicy()`** - CORP header
+- **`PermissionsPolicy()`** - Controls browser features
+- **`ClearSiteData()`** - Clears browser data
+- **`Default()`** - Applies recommended security headers
+
+## Content Security Policy Example
+
+```go
+// Gin
+r.Use(ginhelmet.ContentSecurityPolicy(
+    ginhelmet.CSP("default-src", "'self'"),
+    ginhelmet.CSP("img-src", "*"),
+    ginhelmet.CSP("script-src", "'self' 'unsafe-inline'"),
+))
+
+// Echo
+e.Use(echohelmet.ContentSecurityPolicy(
+    echohelmet.CSP("default-src", "'self'"),
+    echohelmet.CSP("img-src", "*"),
+    echohelmet.CSP("script-src", "'self' 'unsafe-inline'"),
+))
+```
+
+## Benefits
+
+- **No Framework Lock-in**: The core package has no framework dependencies
+- **Consistent API**: Same function names and behavior across all frameworks
+- **Minimal Dependencies**: Each framework package only pulls in what it needs
+- **Easy Migration**: Switch between frameworks without changing security logic
+- **Type Safety**: Full Go type safety and IDE support
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

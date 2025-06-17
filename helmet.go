@@ -1,183 +1,180 @@
-package helmet
+// Package ginhelmet provides security middleware for Gin web framework.
+//
+// Deprecated: This package is deprecated. Please use github.com/danielkov/gin-helmet/ginhelmet instead.
+// This package is maintained for backwards compatibility only.
+//
+// Migration example:
+//
+//	Old: import "github.com/danielkov/gin-helmet"
+//	New: import "github.com/danielkov/gin-helmet/ginhelmet"
+//
+// All function calls remain the same, just change the import path.
+package ginhelmet
 
 import (
-	"fmt"
-	"strconv"
-	"strings"
-
+	"github.com/danielkov/gin-helmet/ginhelmet"
 	"github.com/gin-gonic/gin"
 )
 
-// NoRobotIndex applies header to protect your server from robot indexation
+// NoRobotIndex applies header to protect your server from robot indexation.
+//
+// Deprecated: Use github.com/danielkov/gin-helmet/ginhelmet.NoRobotIndex instead.
 func NoRobotIndex() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Writer.Header().Set("X-Robots-Tag", "noindex")
-	}
+	return ginhelmet.NoRobotIndex()
 }
 
-// NoSniff applies header to protect your server from MimeType Sniffing
+// NoSniff applies header to protect your server from MimeType Sniffing.
+//
+// Deprecated: Use github.com/danielkov/gin-helmet/ginhelmet.NoSniff instead.
 func NoSniff() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Writer.Header().Set("X-Content-Type-Options", "nosniff")
-	}
+	return ginhelmet.NoSniff()
 }
 
-// DNSPrefetchControl sets Prefetch Control header to prevent browser from prefetching DNS
+// DNSPrefetchControl sets Prefetch Control header to prevent browser from prefetching DNS.
+//
+// Deprecated: Use github.com/danielkov/gin-helmet/ginhelmet.DNSPrefetchControl instead.
 func DNSPrefetchControl() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Writer.Header().Set("X-DNS-Prefetch-Control", "off")
-	}
+	return ginhelmet.DNSPrefetchControl()
 }
 
-// FrameGuard sets Frame Options header to deny to prevent content from the website to be served in an iframe
+// FrameGuard sets Frame Options header to deny to prevent content from the website to be served in an iframe.
+//
+// Deprecated: Use github.com/danielkov/gin-helmet/ginhelmet.FrameGuard instead.
 func FrameGuard(opt ...string) gin.HandlerFunc {
-	var o string
-	if len(opt) > 0 {
-		o = opt[0]
-	} else {
-		o = "DENY"
-	}
-	return func(c *gin.Context) {
-		c.Writer.Header().Set("X-Frame-Options", o)
-	}
+	return ginhelmet.FrameGuard(opt...)
 }
 
 // SetHSTS Sets Strict Transport Security header to the default of 60 days
-// an optional integer may be added as a parameter to set the amount in seconds
+// an optional integer may be added as a parameter to set the amount in seconds.
+//
+// Deprecated: Use github.com/danielkov/gin-helmet/ginhelmet.SetHSTS instead.
 func SetHSTS(sub bool, opt ...int) gin.HandlerFunc {
-	var o int
-	if len(opt) > 0 {
-		o = opt[0]
-	} else {
-		o = 5184000
-	}
-	op := "max-age=" + strconv.Itoa(o)
-	if sub {
-		op += "; includeSubDomains"
-	}
-	return func(c *gin.Context) {
-		c.Writer.Header().Set("Strict-Transport-Security", op)
-	}
+	return ginhelmet.SetHSTS(sub, opt...)
 }
 
-// IENoOpen sets Download Options header for Internet Explorer to prevent it from executing downloads in the site's context
+// IENoOpen sets Download Options header for Internet Explorer to prevent it from executing downloads in the site's context.
+//
+// Deprecated: Use github.com/danielkov/gin-helmet/ginhelmet.IENoOpen instead.
 func IENoOpen() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Writer.Header().Set("X-Download-Options", "noopen")
-	}
+	return ginhelmet.IENoOpen()
 }
 
-// XSSFilter applies very minimal XSS protection via setting the XSS Protection header on
+// XSSFilter applies very minimal XSS protection via setting the XSS Protection header on.
+// NOTE: X-XSS-Protection is deprecated. Use Content Security Policy instead.
+//
+// Deprecated: Use github.com/danielkov/gin-helmet/ginhelmet.XSSFilter instead.
 func XSSFilter() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Writer.Header().Set("X-XSS-Protection", "1; mode=block")
-	}
+	return ginhelmet.XSSFilter()
 }
 
-// Default returns a number of handlers that are advised to use for basic HTTP(s) protection
+// Default returns a number of handlers that are advised to use for basic HTTP(s) protection.
+//
+// Deprecated: Use github.com/danielkov/gin-helmet/ginhelmet.Default instead.
 func Default() (gin.HandlerFunc, gin.HandlerFunc, gin.HandlerFunc, gin.HandlerFunc, gin.HandlerFunc, gin.HandlerFunc) {
-	return NoSniff(), DNSPrefetchControl(), FrameGuard(), SetHSTS(true), IENoOpen(), XSSFilter()
+	return ginhelmet.Default()
 }
 
 // Referrer sets the Referrer Policy header to prevent the browser from sending data from your website to another one upon navigation
-// an optional string can be provided to set the policy to something else other than "no-referrer".
+// an optional string can be provided to set the policy to something else other than "strict-origin-when-cross-origin".
+//
+// Deprecated: Use github.com/danielkov/gin-helmet/ginhelmet.Referrer instead.
 func Referrer(opt ...string) gin.HandlerFunc {
-	var o string
-	if len(opt) > 0 {
-		o = opt[0]
-	} else {
-		o = "no-referrer"
-	}
-	return func(c *gin.Context) {
-		c.Writer.Header().Set("Referrer-Policy", o)
-	}
+	return ginhelmet.Referrer(opt...)
 }
 
-// NoCache obliterates cache options by setting a number of headers. This prevents the browser from storing your assets in cache
+// NoCache obliterates cache options by setting a number of headers. This prevents the browser from storing your assets in cache.
+//
+// Deprecated: Use github.com/danielkov/gin-helmet/ginhelmet.NoCache instead.
 func NoCache() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Writer.Header().Set("Surrogate-Control", "no-store")
-		c.Writer.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
-		c.Writer.Header().Set("Pragma", "no-cache")
-		c.Writer.Header().Set("Expires", "0")
-	}
+	return ginhelmet.NoCache()
 }
 
-// ContentSecurityPolicy sets a header which will restrict your browser to only allow certain sources for assets on your website
-// The function accepts a map of its parameters which are appended to the header so you can control which headers should be set
-// The second parameter of the function is a boolean, which set to true will tell the handler to also set legacy headers, like
-// those that work in older versions of Chrome and Firefox.
-/*
-Example usage:
-    opts := map[string]string{
-	    "default-src": "'self'",
-	    "img-src": "*",
-	    "media-src": "media1.com media2.com",
-	    "script-src": "userscripts.example.com"
-    }
-	s.Use(helmet.ContentSecurityPolicy(opts, true))
+// ContentSecurityPolicy sets a header which will restrict your browser to only allow certain sources for assets on your website.
+// The function accepts a map of its parameters which are appended to the header so you can control which headers should be set.
+//
+// Example usage:
+//
+//	s.Use(ginhelmet.ContentSecurityPolicy(
+//		ginhelmet.CSP("default-src", "'self'"),
+//		ginhelmet.CSP("img-src", "*"),
+//		ginhelmet.CSP("media-src", "media1.com media2.com"),
+//		ginhelmet.CSP("script-src", "userscripts.example.com"),
+//	))
+//
+// See [Content Security Policy on MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) for more info.
+//
+// Deprecated: Use github.com/danielkov/gin-helmet/ginhelmet.ContentSecurityPolicy instead.
+func ContentSecurityPolicy(opts ...string) gin.HandlerFunc {
+	return ginhelmet.ContentSecurityPolicy(opts...)
+}
 
-See [Content Security Policy on MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) for more info.
-*/
-func ContentSecurityPolicy(opt map[string]string, legacy bool) gin.HandlerFunc {
-	policy := ""
-	for k, v := range opt {
-		policy += fmt.Sprintf("%s %s; ", k, v)
-	}
-	policy = strings.TrimSuffix(policy, "; ")
-	return func(c *gin.Context) {
-		if legacy {
-			c.Writer.Header().Set("X-Webkit-CSP", policy)
-			c.Writer.Header().Set("X-Content-Security-Policy", policy)
-		}
-		c.Writer.Header().Set("Content-Security-Policy", policy)
-	}
+// CSP is a helper function for building Content Security Policy directives.
+//
+// Deprecated: Use github.com/danielkov/gin-helmet/ginhelmet.CSP instead.
+func CSP(key, value string) string {
+	return ginhelmet.CSP(key, value)
+}
+
+// ContentSecurityPolicyLegacy sets CSP header with legacy browser support.
+//
+// Deprecated: Use github.com/danielkov/gin-helmet/ginhelmet.ContentSecurityPolicyLegacy instead.
+func ContentSecurityPolicyLegacy(opts ...string) gin.HandlerFunc {
+	return ginhelmet.ContentSecurityPolicyLegacy(opts...)
 }
 
 // ExpectCT sets Certificate Transparency header which can enforce that you're using a Certificate which is ready for the
 // upcoming Chrome requirements policy. The function accepts a maxAge int which is the TTL for the policy in delta seconds,
 // an enforce boolean, which simply adds an enforce directive to the policy (otherwise it's report-only mode) and a
 // optional reportUri, which is the URI to which report information is sent when the policy is violated.
+// NOTE: Expect-CT is deprecated as of June 2021.
+//
+// Deprecated: Use github.com/danielkov/gin-helmet/ginhelmet.ExpectCT instead.
 func ExpectCT(maxAge int, enforce bool, reportURI ...string) gin.HandlerFunc {
-	policy := ""
-	if enforce {
-		policy += "enforce, "
-	}
-	if len(reportURI) > 0 {
-		policy += fmt.Sprintf("report-uri=%s, ", reportURI[0])
-	}
-	policy += fmt.Sprintf("max-age=%d", maxAge)
-	return func(c *gin.Context) {
-		c.Writer.Header().Set("Expect-CT", policy)
-	}
+	return ginhelmet.ExpectCT(maxAge, enforce, reportURI...)
 }
 
 // SetHPKP sets HTTP Public Key Pinning for your server. It is not necessarily a great thing to set this without proper
 // knowledge of what this does. [Read here](https://developer.mozilla.org/en-US/docs/Web/HTTP/Public_Key_Pinning) otherwise you
 // may likely end up DoS-ing your own server and domain. The function accepts a map of directives and their values according
 // to specifications.
-/*
-Example usage:
-
-	keys := []string{"cUPcTAZWKaASuYWhhneDttWpY3oBAkE3h2+soZS7sWs=", "M8HztCzM3elUxkcjR2S5P4hhyBNf6lHkmjAHKhpGPWE="}
-	r := gin.New()
-	r.Use(SetHPKP(keys, 5184000, true, "domain.com"))
-
-*/
+// NOTE: HPKP is deprecated and not recommended for use.
+//
+// Deprecated: Use github.com/danielkov/gin-helmet/ginhelmet.SetHPKP instead.
 func SetHPKP(keys []string, maxAge int, sub bool, reportURI ...string) gin.HandlerFunc {
-	policy := ""
-	for _, v := range keys {
-		policy += fmt.Sprintf("pin-sha256=\"%s\"; ", v)
-	}
-	policy += fmt.Sprintf("max-age=%d; ", maxAge)
-	if sub {
-		policy += "includeSubDomains; "
-	}
-	if len(reportURI) > 0 {
-		policy += fmt.Sprintf("report-uri=\"%s\"", reportURI[0])
-	}
-	policy = strings.TrimSuffix(policy, "; ")
-	return func(c *gin.Context) {
-		c.Writer.Header().Set("Public-Key-Pins", policy)
-	}
+	return ginhelmet.SetHPKP(keys, maxAge, sub, reportURI...)
+}
+
+// CrossOriginOpenerPolicy (COOP) helps isolate your document from other origins.
+//
+// Deprecated: Use github.com/danielkov/gin-helmet/ginhelmet.CrossOriginOpenerPolicy instead.
+func CrossOriginOpenerPolicy(opt ...string) gin.HandlerFunc {
+	return ginhelmet.CrossOriginOpenerPolicy(opt...)
+}
+
+// CrossOriginEmbedderPolicy (COEP) helps isolate your document from other origins.
+//
+// Deprecated: Use github.com/danielkov/gin-helmet/ginhelmet.CrossOriginEmbedderPolicy instead.
+func CrossOriginEmbedderPolicy(opt ...string) gin.HandlerFunc {
+	return ginhelmet.CrossOriginEmbedderPolicy(opt...)
+}
+
+// CrossOriginResourcePolicy (CORP) helps isolate your document from other origins.
+//
+// Deprecated: Use github.com/danielkov/gin-helmet/ginhelmet.CrossOriginResourcePolicy instead.
+func CrossOriginResourcePolicy(opt ...string) gin.HandlerFunc {
+	return ginhelmet.CrossOriginResourcePolicy(opt...)
+}
+
+// PermissionsPolicy sets the Permissions Policy header to control which browser features can be used.
+//
+// Deprecated: Use github.com/danielkov/gin-helmet/ginhelmet.PermissionsPolicy instead.
+func PermissionsPolicy(policy string) gin.HandlerFunc {
+	return ginhelmet.PermissionsPolicy(policy)
+}
+
+// ClearSiteData clears specific types of data from the browser.
+//
+// Deprecated: Use github.com/danielkov/gin-helmet/ginhelmet.ClearSiteData instead.
+func ClearSiteData(types ...string) gin.HandlerFunc {
+	return ginhelmet.ClearSiteData(types...)
 }

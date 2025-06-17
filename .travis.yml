@@ -1,12 +1,15 @@
 language: go
-sudo: false
 go:
-  - 1.6
+  - "1.21"
+  - "1.22"
   - tip
 
 go_import_path: github.com/danielkov/gin-helmet
 
-before_install:
-  - go get github.com/mattn/goveralls
 script:
-  - $GOPATH/bin/goveralls -service=travis-ci
+  - go mod download
+  - go test -v -race -coverprofile=coverage.txt -covermode=atomic
+  - go vet ./...
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
