@@ -155,6 +155,42 @@ e.Use(echohelmet.ContentSecurityPolicy(
 - **Easy Migration**: Switch between frameworks without changing security logic
 - **Type Safety**: Full Go type safety and IDE support
 
+## Writing Your Own Framework-Specific Helmet Adapter
+
+```go
+// MyHeaderWriter implements core.HeaderWriter for My framework contexts
+type MyHeaderWriter struct {
+	ctx myframework.Context
+}
+
+// SetHeader sets a header in the response - adopt this to your framework's context
+func (m *MyHeaderWriter) SetHeader(key, value string) {
+	m.ctx.Response().Header().Set(key, value)
+}
+
+// Next is called when the middleware is done - adopt this to your framework's context
+func (m *MyHeaderWriter) Next() {
+	m.ctx.Next()
+}
+
+// wrapMiddleware converts a core.MiddlewareFunc to myframework.MiddlewareFunc
+func wrapMiddleware(middleware core.MiddlewareFunc) myframework.MiddlewareFunc {
+	return func(next myframework.HandlerFunc) myframework.HandlerFunc {
+		return func(c myframework.Context) error {
+			writer := &MyHeaderWriter{ctx: c}
+			middleware(writer)
+			return next(c)
+		}
+	}
+}
+
+// You can copy/paste all of the functions from any of the existing framework-specific packages, e.g.: [echohelmet/helmet.go](echohelmet/helmet.go#L32)
+// NoRobotIndex applies header to protect your server from robot indexation
+func NoRobotIndex() BeegoMiddleware {
+	return wrapMiddleware(core.NoRobotIndex())
+}
+```
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
