@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/beego/beego/v2 v2.1.4
-	github.com/danielkov/gin-helmet/core v0.0.0
+	github.com/danielkov/gin-helmet/core v1.0.0
 )
 
 require (

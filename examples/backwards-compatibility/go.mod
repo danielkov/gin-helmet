@@ -3,7 +3,7 @@ module backwards-compatibility-example
 go 1.21
 
 require (
-	github.com/danielkov/gin-helmet v0.0.0
+	github.com/danielkov/gin-helmet v1.0.0
 	github.com/gin-gonic/gin v1.10.1
 )
 

@@ -3,7 +3,7 @@ module github.com/danielkov/gin-helmet/zerohelmet
 go 1.21
 
 require (
-	github.com/danielkov/gin-helmet/core v0.0.0
+	github.com/danielkov/gin-helmet/core v1.0.0
 	github.com/zeromicro/go-zero v1.6.0
 )
 
