@@ -3,7 +3,7 @@ module github.com/danielkov/gin-helmet/echohelmet
 go 1.21
 
 require (
-	github.com/danielkov/gin-helmet/core v1.0.0
+	github.com/danielkov/gin-helmet/core v1.0.1
 	github.com/labstack/echo/v4 v4.11.2
 )
 
