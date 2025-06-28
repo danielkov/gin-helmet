@@ -6,6 +6,10 @@ github.com/cloudwego/base64x v0.1.4 h1:jwCgWpFanWmN8xoIUHa2rtzmkd5J2plF/dnLS6Xd/
 github.com/cloudwego/base64x v0.1.4/go.mod h1:0zlkT4Wn5C6NdauXdJRhSKRlJvmclQ1hhJgA0rcu/8w=
 github.com/cloudwego/iasm v0.2.0 h1:1KNIy1I1H9hNNFEEH3DVnI4UujN+1zjpuk6gwHLTssg=
 github.com/cloudwego/iasm v0.2.0/go.mod h1:8rXZaNYT2n95jn+zTI1sDr+IgcD2GVs0nlbbQPiEFhY=
+github.com/danielkov/gin-helmet/core v1.0.1 h1:k9uioST/qlJuT+/q0Tdfkk86/UMH7nJkDW98SRlgsk8=
+github.com/danielkov/gin-helmet/core v1.0.1/go.mod h1:C0CB9QSYvWeVRdY07jc/Bbd1fxCQnz2WK/TeGUGdn4o=
+github.com/danielkov/gin-helmet/ginhelmet v1.0.2 h1:3ItojxpIyn310Ji1CnUipmuqwQyH70vyTWWq51Ue8fI=
+github.com/danielkov/gin-helmet/ginhelmet v1.0.2/go.mod h1:eMKdQv517mmaz7lUc8o1cLsLfF1JyNgC8LbO9XA1nnw=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
